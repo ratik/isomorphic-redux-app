@@ -53,9 +53,6 @@ if (process.env.NODE_ENV === 'production') {
         loader: 'babel',
         exclude: /node_modules/,
         include: __dirname,
-        query: {
-          optional: ['runtime'],
-          stage: 2,
           env: {
             development: {
               plugins: [
@@ -75,18 +72,25 @@ if (process.env.NODE_ENV === 'production') {
                 ]}
               }
             }
-          }
+          },//
+        query: {
+//          optional: ['runtime'],
+          presets: ['es2015', 'stage-2', 'react'],
+
         }
       },
       { test: /\.(png|jpg|gif|jpeg)$/, loader: 'url-loader?limit=8192'},
-      { test: /\.css$/, loader: 'style-loader!css-loader' }
+//      { test: /\.css$/, loader: 'style-loader!css-loader'}
+      { test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap') }
+
     ]},
     entry : [
       'webpack-hot-middleware/client',
       './src/client/index.js'
     ],
     plugins : [
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
+      new ExtractTextPlugin("app.css")
     ]  
   });
   
