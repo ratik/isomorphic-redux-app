@@ -27,7 +27,7 @@ export function fetchPosts(reddit = 'reactjs') {
     type: POSTS_GET,
     reddit,
     promise: request.get(`http://www.reddit.com/r/${reddit}.json`)
-  }
+  };
 }
 
 function shouldFetchPosts(state, reddit) {

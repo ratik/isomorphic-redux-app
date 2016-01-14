@@ -7,6 +7,7 @@ import App from "./containers/App";
 import CounterPage from "./containers/CounterPage";
 import RedditPage from "./containers/RedditPage";
 import TodoPage from "./containers/TodoPage";
+import LoginPage from "./containers/LoginPage";
 
 //Redux Dumb
 import HomePage from "./components/Home";
@@ -20,6 +21,7 @@ export default (
       <Route path="todo" component={TodoPage} />
       <Route path="counter" component={CounterPage} />
       <Route path="about" component={AboutPage} />
+      <Route path="login" component={LoginPage} />
       <Route path="*" component={error404}/>
   </Route>
 );

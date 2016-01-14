@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 import Picker from './reddit/Picker';
 import Posts from './reddit/Posts';
 

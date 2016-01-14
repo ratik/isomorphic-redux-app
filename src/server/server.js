@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 import webpack from 'webpack';
 import webpackConfig from '../../webpack.config';
@@ -17,6 +18,7 @@ import { getUser } from '../common/api/user';
 import routes from '../common/routes';
 import packagejson from '../../package.json';
 
+
 const app = express();
 const renderFullPage = (html, initialState) => {
   return `
@@ -30,13 +32,13 @@ const renderFullPage = (html, initialState) => {
       <body>
         <div id="root">${html}</div>
         <script>
-          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)}; 
+          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
         <script src="/static/bundle.js"></script>
       </body>
     </html>
   `;
-}
+};
 
 if(process.env.NODE_ENV !== 'production'){
   const compiler = webpack(webpackConfig);
@@ -46,28 +48,21 @@ if(process.env.NODE_ENV !== 'production'){
   app.use('/static', express.static(__dirname + '/../../dist'));
 }
 
+app.use(cookieParser());
+
 app.get('/*', function (req, res) {
-
   const location = createLocation(req.url);
-
-  getUser(user => {
-
-      if(!user) {
-        return res.status(401).end('Not Authorised');
-      }
-
+  getUser(req.cookies.token || false, user => {
       match({ routes, location }, (err, redirectLocation, renderProps) => {
 
         if(err) {
           console.error(err);
           return res.status(500).end('Internal server error');
         }
-
-        if(!renderProps)
+        if(!renderProps) {
           return res.status(404).end('Not found');
-
-        const store = configureStore({user : user, version : packagejson.version});
-
+        }
+        const store = configureStore({version : packagejson.version});
         const InitialView = (
           <Provider store={store}>
               <RoutingContext {...renderProps} />
@@ -79,16 +74,16 @@ app.get('/*', function (req, res) {
           .then(html => {
             const componentHTML = ReactDOMServer.renderToString(InitialView);
             const initialState = store.getState();
-            res.status(200).end(renderFullPage(componentHTML,initialState))
+            res.status(200).end(renderFullPage(componentHTML,initialState));
           })
           .catch(err => {
-            console.log(err)
-            res.end(renderFullPage("",{}))
+            console.log(err);
+            res.end(renderFullPage("",{}));
           });
       });
 
     }
-  )
+  );
 
 });
 
